@@ -45,7 +45,7 @@ spec:
     app: mi-app2
   ports:
     - protocol: TCP
-      port: 4001        # Puerto del Service 2
+      port: 4000       # Puerto del Service 2
       targetPort: 3000  # Puerto del contenedor
   type: ClusterIP
 ---
