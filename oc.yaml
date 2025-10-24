@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mi-deployment2
+  namespace: guscontre-dev
+  labels:
+    app: mi-app2
+    areanegocio: tecnologia
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mi-app2
+  template:
+    metadata:
+      labels:
+        app: mi-app2
+    spec:
+      containers:
+        - name: contenedor-principal
+          image: guscontre1/holamundoclase:build-{{ tag }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "800Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1500Mi"
+          envFrom:
+            - configMapRef:
+                name: mi-configmap2
+            - secretRef:
+                name: mi-secret2
+          volumeMounts:
+            - name: datos2
+              mountPath: "/app/data"
+      volumes:
+        - name: datos2
+          persistentVolumeClaim:
+            claimName: mi-pvc2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mi-servicio2
+  namespace: guscontre-dev
+spec:
+  selector:
+    app: mi-app2
+  ports:
+    - protocol: TCP
+      port: 4001        # Puerto del Service 2
+      targetPort: 3000  # Puerto del contenedor
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mi-configmap2
+  namespace: guscontre-dev
+data:
+  DATABASE: "192.168.1.2"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mi-secret2
+  namespace: guscontre-dev
+type: Opaque
+data:
+  PASSWORD: 'aG9sYTI='  # "holaa2" en base64, para distinguir del original
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mi-hpa2
+  namespace: guscontre-dev
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: deployment
+    name: mi-deployment2
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 100
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mi-pvc2
+  namespace: guscontre-dev
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: gp3
