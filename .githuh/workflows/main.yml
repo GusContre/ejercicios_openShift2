@@ -2,7 +2,7 @@ name: CI-DockerBuild
 
 on: 
   push:
-    branches: ["test"]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -59,11 +59,11 @@ jobs:
       - name: Update Deployment tag
         run: |
           echo "Reemplazando {{ tag }} con ${{ github.run_number }}"
-          sed -i "s|{{ tag }}|${{ github.run_number }}|g" oc.yaml
-          cat oc.yaml
+          sed -i "s|{{ tag }}|${{ github.run_number }}|g" oc2.yaml
+          cat oc2.yaml
 
       - name: Deploy files
         run: |
           oc project guscontre-dev
-          oc apply -f oc.yaml
+          oc apply -f oc2.yaml
           oc rollout status deployment/mi-deployment2
