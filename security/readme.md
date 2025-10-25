@@ -1,1 +1,0 @@
-microk8s kubectl create token gustavoc-serviceaccount -n gustavoc --duration=8760h
