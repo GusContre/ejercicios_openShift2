@@ -68,4 +68,4 @@ jobs:
       - name: Deploy files
         run: |
           helm show chart oci://registry-1.docker.io/guscontre1/mi-chart --version 1
-          helm upgrade --install microservicio-1 oci://registry-1.docker.io/guscontre1/mi-chart --version 1 --values values.yaml
+          helm upgrade --install microservicio-2 oci://registry-1.docker.io/guscontre1/mi-chart --version 1 --values values.yaml
